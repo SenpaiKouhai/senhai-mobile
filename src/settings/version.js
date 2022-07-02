@@ -1,5 +1,5 @@
 
 // version checker
 export const currentVersion = {
-    version: 'v1.13'
+    version: 'v1.2'
 }

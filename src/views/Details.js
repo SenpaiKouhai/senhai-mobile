@@ -1,15 +1,18 @@
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react'
-import { ScrollView, View, ImageBackground, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
+import { ScrollView, View, ImageBackground, Image, StyleSheet, TouchableOpacity, Dimensions, useWindowDimensions, StatusBar } from 'react-native'
 import { Divider, IconButton, Text } from 'react-native-paper'
 import { Episode } from '../reusable/Episode';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Loading from '../reusable/Loading';
 import Button from '../reusable/Button'
 import { color } from '../settings/colors'
 import LinearGradient from 'react-native-linear-gradient';
 import { baseUrl } from '../settings/baseUrl'
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteFavorites, saveFavorites } from '../redux/favorites/action';
 
 const styles = StyleSheet.create({
     topContainer: {
@@ -17,7 +20,7 @@ const styles = StyleSheet.create({
     },
     imgBackground: {
         width: '100%',
-        height: Dimensions.get('window').height
+        // height: Dimensions.get('window').height
     },
     mask: {
         height: '100%',
@@ -29,7 +32,7 @@ const styles = StyleSheet.create({
         // flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
-        paddingTop: 40,
+        paddingTop: 20,
     },
     img: {
         width: 150,
@@ -38,19 +41,22 @@ const styles = StyleSheet.create({
         marginLeft: 5    
     },
     titleContainer: {
-        width: '70%',
-        marginTop: 10
+        width: '85%',
+        marginTop: 10,
+        alignItems: 'center'
     },
     title: {
         fontSize: 21,
-        fontWeight: 'bold',
+        // fontWeight: 'bold',
         marginBottom: 5,
-        textAlign: 'center'
+        textAlign: 'center',
+        fontFamily: 'OpenSans-Bold'
     },
     subtitle: {
         opacity: 0.9,
-        fontSize: 12,
-        textAlign: 'center'
+        fontSize: 11,
+        textAlign: 'center',
+        fontFamily: 'OpenSans-Light'
     },
     readmoreText: {
         // marginTop: 10,
@@ -70,7 +76,7 @@ const styles = StyleSheet.create({
     },
     summaryTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily: 'OpenSans-Bold',
     },  
     summaryText: {
         lineHeight: 21,
@@ -86,10 +92,15 @@ const styles = StyleSheet.create({
         padding: 10, 
         // paddingLeft: 15,
         // paddingRight: 15,
-        // backgroundColor: '#C70039', 
+        backgroundColor: 'rgba(43,51,63,.4)', 
         borderRadius: 50, 
         marginLeft: 10, 
-        marginRight: 5 
+        marginRight: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        // borderColor: 'white',
+        borderColor: 'grey',
+        borderWidth: 0.5,
     },
     navigationContainer: {
         paddingTop: 10,
@@ -106,12 +117,16 @@ const styles = StyleSheet.create({
 })
 
 export default function Details({ route }) {
-    const navigation = useNavigation()
     const { id } = route.params;
+
+    const navigation = useNavigation()
+    const favoriteList = useSelector( state => state.favorites )
+    const dispatch = useDispatch()
+    const window = useWindowDimensions()
 
     const [details, setDetails] = useState()
     const [loading, setLoading] = useState(true)
-    const [bookmark, setBookmark] = useState(false)
+    // const [bookmark, setBookmark] = useState(false)
     const [favorite, setFavorite] = useState(false)
     const [genre, setGenre] = useState([])
 
@@ -120,6 +135,7 @@ export default function Details({ route }) {
         axios.get(`${baseUrl}details/${id}`)
         .then( res => {
             setDetails(res.data.results)
+            favoriteList.filter( i => i.id === id ).length != 0 ? setFavorite(true) : setFavorite(false)
             setLoading(false)
             let genres = []
             let arr = res.data.results[0].genres.split(',')
@@ -144,13 +160,22 @@ export default function Details({ route }) {
         // console.log(e.nativeEvent);
     },[]);
 
+    const isTitleExistOnFavorites = () => {
+        if (favorites.filter( i => i.id === id ).length != 0) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     return loading ? <Loading /> : (
         <View>
             {details.map( (anime,index) => (
                 <View key={index} >
                     <ImageBackground
                           source={{
-                            uri: anime.image
+                            uri: anime.image,
+                            height: window.height
                         }}
                         imageStyle={styles.imgBackground}
                         style={styles.imgBackground}
@@ -161,28 +186,49 @@ export default function Details({ route }) {
                         <View style={styles.mask} >
                             <View style={styles.navigationContainer} >
                                 <TouchableOpacity onPress={ () => navigation.goBack() } style={styles.backBtn} >
-                                    <Icon name="arrow-back" color="#fff" size={25} />
+                                    <Icon name="keyboard-backspace" color="#fff" size={25} />
                                 </TouchableOpacity>
 
                                 <View style={styles.navBtn} >
                                     <IconButton
                                         icon={ favorite ? 'heart' : 'heart-outline'}
                                         size={25}
-                                        onPress={() => setFavorite(!favorite)}
+                                        onPress={() => {
+                                            if(!favorite) {
+                                                setFavorite(true)
+                                                let a = {
+                                                    title: anime.title,
+                                                    image: anime.image,
+                                                    id: id,
+                                                    totalepisode: anime.totalepisode, 
+                                                    released: anime.type, 
+                                                    genres: anime.genres, 
+                                                    status: anime.status.trim(),
+                                                    othername: anime.Othername,
+                                                    summary: anime.summary
+                                                }
+                                                dispatch(saveFavorites(a))
+                                            } else {
+                                                setFavorite(false)
+                                                dispatch(deleteFavorites(anime.title))
+                                            }
+                                        }}
                                         animated
                                         color='#F00F05'
+                                        style={{ marginRight: 10 }}
                                     />
 
-                                    <IconButton
+                                    {/* <IconButton
                                         icon={ bookmark ? 'bookmark' : 'bookmark-outline'}
                                         size={25}
                                         onPress={() => setBookmark(!bookmark)}
                                         animated
                                         color={color.blue}
-                                    />
+                                    /> */}
                                 </View>
                             </View>
-                            <ScrollView bounces={true} >
+
+                            <ScrollView bounces={true} nestedScrollEnabled={true} >
                                 <View style={styles.titleImageContainer} >
                                     <Image 
                                         source={{ uri: anime.image }}
@@ -190,9 +236,23 @@ export default function Details({ route }) {
                                         fadeDuration={1000}
                                     />
                                     <View style={styles.titleContainer} >
-                                        <Text style={styles.title} >{anime.title}</Text>
-                                        <Text style={styles.subtitle} >{anime.Othername}</Text>
+                                        <Text style={styles.title} numberOfLines={2} >{anime.title}</Text>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center'}} >
+                                            <View style={{ padding: 5, backgroundColor: 'rgba(43,51,63,.4)', borderRadius: 5, marginRight: 10, flexDirection: 'row', alignItems: 'center' }} >
+                                                <MaterialCommunityIcons style={{ marginRight: 2 }} name="circle" color="#3498DB" size={11} />
+                                                <Text style={styles.subtitle} numberOfLines={3} >{anime.status.trim()}</Text>
+                                            </View>
+                                            <View style={{ padding: 5, backgroundColor: 'rgba(43,51,63,.4)', borderRadius: 5, flexDirection: 'row', alignItems: 'center' }} >
+                                                <MaterialCommunityIcons style={{ marginRight: 2 }} name="circle" color="#3498DB" size={11} />
+                                                <Text style={styles.subtitle} numberOfLines={3} >{anime.type}</Text>
+                                            </View>
+                                            {/* <View style={{ padding: 5, backgroundColor: '#154360', borderRadius: 5 }} >
+                                                <Text style={styles.subtitle} numberOfLines={3} >{anime.status.trim()}</Text>
+                                            </View> */}
+                                        </View>
                                     </View>
+
+                                    {/* <Text style={{ fontSize: 13, opacity: 0.8, color: '#AED6F1' }} >Ongoing</Text> */}
                                 </View>
 
                                 {/* summary view sets the text to read more and read less */}
@@ -220,7 +280,7 @@ export default function Details({ route }) {
                                 <ScrollView horizontal style={styles.genreContainer} showsHorizontalScrollIndicator={false} >
                                     {genre.map( (anime,index) => (
                                         <TouchableOpacity key={index}  activeOpacity={0.7}  > 
-                                            <LinearGradient 
+                                            {/* <LinearGradient 
                                                 // start={{x: 0.0, y: 0.5}} end={{x: 0.0, y: 1.0}}
                                                 // start={{ x: 0, y: 0 }}
                                                 // end={{ x: 1, y: 1 }}
@@ -228,9 +288,16 @@ export default function Details({ route }) {
                                                 // locations={[0,0.5,0.6]} , '#FF5733'
                                                 colors={['#C70039', '#F6390B']}
                                                 style={styles.genre}
-                                            >
-                                                <Text style={{ fontSize: 13, fontWeight: 'bold' }} >{anime.genre.trim(' ')}</Text>
-                                            </LinearGradient>
+                                            > */}
+                                            <View style={styles.genre} >
+
+                                                <View style={{height: 10 }} >
+                                                    <MaterialCommunityIcons name="circle" color="#2ECC71" size={11} />
+                                                </View>
+                                            
+                                                <Text style={{ fontSize: 13, fontWeight: 'bold' }} > {anime.genre.trim(' ')}</Text>
+                                            </View>
+                                            {/* </LinearGradient> */}
                                         </TouchableOpacity>
                                     ) )}
 

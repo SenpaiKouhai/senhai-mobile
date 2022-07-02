@@ -8,7 +8,13 @@ export default function ScheduleTab() {
     var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     var day = days[ new Date().getDay() ];
     return (
-        <Tab.Navigator initialRouteName={day} lazy={true} swipeEnabled={true} swipeVelocityImpact={0.6} tabBarOptions={{scrollEnabled:true}} >
+        <Tab.Navigator 
+            initialRouteName={day} 
+            lazy={true} 
+            swipeEnabled={true} 
+            swipeVelocityImpact={0.6} 
+            tabBarOptions={{scrollEnabled:true}} 
+        >
             <Tab.Screen name="Monday" component={Monday} />
             <Tab.Screen name="Tuesday" component={Tuesday} />
             <Tab.Screen name="Wednesday" component={Wednesday} />

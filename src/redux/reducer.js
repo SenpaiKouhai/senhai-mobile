@@ -1,9 +1,10 @@
-import { IS_UPDATED, VIDEOFULLSCREEN, TOAST_ONCE, TAB_SELECT, ANIME_TITLE } from "./action"
+import { IS_UPDATED, VIDEOFULLSCREEN, TOAST_ONCE, TAB_SELECT, ANIME_TITLE, GENRE } from "./action"
 
 const initialState = {
     videofullscreen: false,
     toastOnce: false,
     header: 'Home',
+    genre: '',
     isUpdated: true,
     animeTitle: ''
 }
@@ -14,6 +15,11 @@ const reducer = (state = initialState, action) => {
             return{
                 ...state,
                 animeTitle: action.payload
+            }
+        case GENRE:
+            return{
+                ...state,
+                genre: action.payload
             }
         case TAB_SELECT:
             return{

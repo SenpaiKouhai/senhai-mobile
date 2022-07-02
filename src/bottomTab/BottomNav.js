@@ -13,6 +13,7 @@ import { Text } from 'react-native-paper';
 import { Dimensions, View } from 'react-native';
 import ScheduleTab from './Schedule/ScheduleTab';
 import History from './History/History';
+import Favorites from './Favorites/Favorites';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -20,7 +21,7 @@ export default function BottomNav() {
     const dispatch = useDispatch()
     const isUpdated = useSelector( state => state.settings.isUpdated)
     return(
-        <Tab.Navigator shifting={true} activeColor="#f0edf6" >
+        <Tab.Navigator  activeColor="#f0edf6"  >
           <Tab.Screen 
             name="Home" 
             component={Home}
@@ -37,7 +38,6 @@ export default function BottomNav() {
                 dispatch(tabSelect('Home'))
               },
             }}
-            
           />
           {/* <Tab.Screen 
               name="Schedule" 
@@ -63,7 +63,7 @@ export default function BottomNav() {
               options={{
                 tabBarLabel: 'History',
                 tabBarIcon: ({ color }) => (
-                  <MaterialIcons name="history" color={color} size={26} />
+                  <MaterialCommunityIcons name="history" color={color} size={26} />
                 ),
                 tabBarColor: '#EC4210'
               }} 
@@ -76,12 +76,12 @@ export default function BottomNav() {
             
             />
           <Tab.Screen 
-              name="Bookmarks" 
-              component={Bookmark} 
+              name="Favorites" 
+              component={Favorites} 
               options={{
-                tabBarLabel: 'Bookmark',
+                tabBarLabel: 'Favorites',
                 tabBarIcon: ({ color }) => (
-                  <MaterialIcons name="collections-bookmark" color={color} size={26} />
+                  <MaterialCommunityIcons name="heart" color={color} size={26} />
                 ),
                 tabBarColor: '#900C3F',
                 
@@ -89,7 +89,7 @@ export default function BottomNav() {
               listeners={{
                 tabPress: e => {
                   // Prevent default action 900C3F 2A96D5
-                  dispatch(tabSelect('Bookmark'))
+                  dispatch(tabSelect('Favorites'))
                 },
                 
               }}

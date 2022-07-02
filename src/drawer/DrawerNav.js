@@ -15,7 +15,7 @@ export default function DrawerNav() {
                 name="StackView" 
                 component={StackView} 
             />
-            {/* <Drawer.Screen name='sched' component={ScheduleTab} options={{ header: true }} /> */}
+            <Drawer.Screen name='sched' component={ScheduleTab} options={{ header: true }} />
             {/* <Drawer.Screen name="Settings" component={Settings} /> */}
         </Drawer.Navigator>
     )

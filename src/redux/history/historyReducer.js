@@ -18,7 +18,7 @@ const historyReducer = (state = [] ,action) => {
 
             // }
       
-            // check if a title and episode already exist
+            // check if a title already exist
             newState = newState.filter( i => i.title != title)
 
             newState.length == 5 && newState.pop()

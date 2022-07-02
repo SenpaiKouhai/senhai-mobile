@@ -40,12 +40,14 @@ export const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         // padding: 5,
-        fontWeight: 'bold',
+        // fontWeight: 'bold',
+        fontFamily: 'OpenSans-Bold',
         color: color.blue
     },
     episode: {
         fontSize: 15,
-        opacity: 0.8
+        opacity: 0.8,
+        fontFamily: 'OpenSans-Light',
         // padding: 15
     },
     btnContainer:{
@@ -157,20 +159,29 @@ export const centerControls = StyleSheet.create({
 })
 
 export const episodeStyle = StyleSheet.create({
+    flatlist:{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
+        width: '100%',
+    },
     container: {
         padding: 5
     },
     episodeContainer: {
-        flexDirection: 'row',
         marginBottom: 10,
-        width: '100%',
-        justifyContent: 'space-between'
+        backgroundColor: '#1A5276',
+        marginLeft: 5,
+        width: 75,
+        height: 50
     },  
     title: {
         fontSize: 20,
-        marginBottom: 10,
-        fontWeight: 'bold',
-        color: '#FF5733'
+        // marginBottom: 10,
+        // fontWeight: 'bold',
+        fontFamily: 'OpenSans-SemiBold',
+        color: '#48C9B0'
     },
     image: {
         width: 50,
@@ -179,9 +190,10 @@ export const episodeStyle = StyleSheet.create({
         borderRadius: 10
     },
     episodeText: {
-        marginLeft: 10,
-        fontSize: 18,
-        fontWeight: 'bold'
-        // color: '#DAF7A6'
+        // marginLeft: 10,
+        fontSize: 15,
+        fontFamily: 'OpenSans-SemiBold'
+        // fontWeight: 'bold'
+        // color: '#fff'
     }
 })

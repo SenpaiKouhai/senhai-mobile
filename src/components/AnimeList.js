@@ -25,10 +25,9 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 15,
-        fontWeight: 'bold',
         textAlign: 'center',
         marginTop: 5,
-        fontFamily: 'Open Sans',
+        fontFamily: 'OpenSans-SemiBold',
         color: "#bce6ff"
     },
     episode: {

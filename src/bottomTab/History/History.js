@@ -43,26 +43,7 @@ export default function History() {
     const history = useSelector( state => state.history)
     const dispatch = useDispatch()
 
-    const appState = useRef(AppState.currentState)
-    const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
-    useEffect(() => {
-        AppState.addEventListener("change", _handleAppStateChange);
-        return () => AppState.removeEventListener("change", _handleAppStateChange);
-    }, []);
-    
-    const _handleAppStateChange = (nextAppState) => {
-        if (
-            appState.current.match(/inactive|background/) &&
-            nextAppState === "active"
-        ) {
-            console.log("App has come to the foreground!");
-        }
-
-        appState.current = nextAppState;
-        setAppStateVisible(appState.current);
-        // console.log("AppState", appState.current);
-    };
 
     // change seconds to video time format
     const convertTime = (time) => {
@@ -82,20 +63,21 @@ export default function History() {
                     style={styles.container} 
                     onPress={ () => navigation.push('Now Watching', { episode: i.episode, title: i.title, id: i.id, totalepisode: i.totalepisode, image: i.image, resumetime: i.time })} 
                     onLongPress={ () => dispatch(deleteHistory(i.title)) }
+                    delayLongPress={5000}
                 >
-                <Image 
-                    source={{ uri: i.image }}
-                    style={styles.image}
-                />
-                <View style={styles.text} >
-                    <Text style={styles.title} numberOfLines={2} >{i.title}</Text>
-                    <Text>Episode {i.episode}</Text>
+                    <Image 
+                        source={{ uri: i.image }}
+                        style={styles.image}
+                    />
+                    <View style={styles.text} >
+                        <Text style={styles.title} numberOfLines={2} >{i.title}</Text>
+                        <Text>Episode {i.episode}</Text>
 
-                    <Text >Left at {convertTime(Math.floor(i.time))}</Text>
-                </View>
+                        <Text >Left at {convertTime(Math.floor(i.time))}</Text>
+                    </View>
 
-                <FontAwesome5 style={styles.icon} name='play' color='#fff' size={20} />
-            </TouchableOpacity>
+                    <FontAwesome5 style={styles.icon} name='play' color='#fff' size={20} />
+                </TouchableOpacity>
             ))}
             {/* <TouchableOpacity activeOpacity={0.6} style={styles.container} onPress={ () => console.log({ arr: history, l: history.length})} >
                 <Image 

@@ -54,6 +54,7 @@ export const Wednesday = () => {
             })
         return () => c.cancel('cancel after fetch')
     }, [])
+    
     return loading ? <Loading /> : (
         <List anime={anime} />
     )
@@ -122,6 +123,7 @@ export const Sunday = () => {
             })
         return () => c.cancel('cancel after fetch')
     }, [])
+    
     return loading ? <Loading /> : (
         <List anime={anime} />
     )

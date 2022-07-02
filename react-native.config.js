@@ -1,5 +1,5 @@
 module.exports = {
-  assets: ['./src/assets/font'],
+  assets: ['./src/assets/font/'],
   dependencies: {
     'react-native-video': {
       platforms: {

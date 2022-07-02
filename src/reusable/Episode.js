@@ -52,7 +52,7 @@ export const Episode = ({ title, id, totalepisode, image }) => {
 
     return (
         <View style={{ paddingBottom: 30 }} >
-            <Divider style={{ backgroundColor: 'white', marginTop: 10 }} />
+            <Divider style={{ backgroundColor: 'grey', marginTop: 10 }} />
                 <Text style={styles.title} >Episodes - {totalepisode}</Text>
             {/* <Divider style={{ backgroundColor: 'white', marginBottom: 10 }} /> */}
 
@@ -61,8 +61,9 @@ export const Episode = ({ title, id, totalepisode, image }) => {
                 renderItem={item}
                 numColumns={2}
                 keyExtractor={(item) => item }
-                centerContent
-                disableVirtualization
+                // centerContent
+                removeClippedSubviews={true}
+                nestedScrollEnabled={true}
             />
 
         </View>

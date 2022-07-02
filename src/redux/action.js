@@ -2,12 +2,19 @@ export const IS_UPDATED = 'IS_UPDATED'
 export const VIDEOFULLSCREEN = 'VIDEOFULLSCREEN'
 export const TOAST_ONCE = 'TOAST_ONCE'
 export const TAB_SELECT = 'TAB_SELECT'
-export const ANIME_TITLE = 'ANIME_TITLE'
+export const GENRE = 'GENRE'
 
 export const animeTitle = (title) => {
     return {
         type: ANIME_TITLE,
         payload: title
+    }
+} 
+
+export const genreName = (genre) => {
+    return {
+        type: GENRE,
+        payload: genre
     }
 } 
 

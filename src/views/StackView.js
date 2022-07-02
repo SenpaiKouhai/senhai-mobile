@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import 'react-native-gesture-handler';
-import StackAppBar from '../reusable/StackAppBar';
+import StackAppBar from './StackAppBar';
 import Home from './Home';
 import { createStackNavigator, HeaderStyleInterpolators, TransitionSpecs  } from '@react-navigation/stack';
 import OngoingList from '../list/OngoingList';
@@ -16,6 +16,9 @@ import { useSelector } from 'react-redux';
 import DrawerNav from '../drawer/DrawerNav';
 import BottomNav from '../bottomTab/BottomNav';
 import TabAppBar from '../bottomTab/TabAppBar';
+import GenreList from '../list/GenreList';
+import Genre from '../components/Genre';
+import GenreAppBar from '../components/GenreAppBar';
 
 const Stack = createStackNavigator();
 
@@ -68,6 +71,20 @@ const StackView = () => {
           component={PopularList} 
           options={{ 
             header: (props) => <StackAppBar {...props} name={'Now Trending'} />
+          }}
+        />
+        <Stack.Screen 
+          name="GenreList" 
+          component={GenreList} 
+          options={{ 
+            header: (props) => <StackAppBar {...props} name={'Genres'} />
+          }}
+        />
+        <Stack.Screen 
+          name="Genre" 
+          component={Genre} 
+          options={{ 
+            header: (props) => <GenreAppBar {...props} />
           }}
         />
         <Stack.Screen 

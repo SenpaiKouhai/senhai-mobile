@@ -25,8 +25,9 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold',
-        color: "#bce6ff"
+        fontFamily: 'OpenSans-Bold'
+        // fontWeight: 'bold',
+        // color: "#bce6ff"
     },
     subtitle: {
         opacity: 0.8,
@@ -70,7 +71,7 @@ const Container = ({ component, isRefresh, title, subtitle }) => {
                         <Text style={styles.title} >{title}</Text>
                         <Text style={styles.subtitle} >{subtitle}</Text>
                     </View>
-                    <Button color='#79C7F5' mode='text' onPress={() => navigation.navigate( component == 'recentlyadded' ? 'Recently Added List' : component == 'popular' ? 'Popular List' : 'Ongoing List')} >See All</Button>
+                    <Button color='#BB2A1A' mode='text' onPress={() => navigation.navigate( component == 'recentlyadded' ? 'Recently Added List' : component == 'popular' ? 'Popular List' : 'Ongoing List')} >See All</Button>
                 </View>
             </SafeAreaView>
             {loading ? <OnLoading /> : <HorizontalScroll navigation={navigation} anime={anime} component={component} />}

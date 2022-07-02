@@ -133,7 +133,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.13"
+        versionName "1.2"
         multiDexEnabled true
     }
     splits {
@@ -184,6 +184,8 @@ android {
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation project(':react-native-detect-navbar-android')
+    implementation project(':react-native-video')
+    implementation "androidx.appcompat:appcompat:1.0.0"
     // For animated GIF support
     implementation 'com.facebook.fresco:animated-gif:2.0.0'
 

@@ -8,14 +8,16 @@ const TabAppBar = () => {
     const navigation = useNavigation()
     const name = useSelector( state => state.settings.header)
     // console.log(name)
+
     return (
         <Appbar.Header style={styles.root} >
-            { name == 'Home' && <Appbar.Action icon="menu" onPress={ () => navigation.openDrawer()} />}
             <Appbar.Content 
-                title={name} 
+                title={name === 'Home' ? 'Discover' : name} 
                 subtitle={name == 'Schedule' ? 'Source: MAL' : null}  
+                color={name == 'Home' ? '#BB2A1A' : "#fff"}
             />
-            {name == 'Home' ? <Appbar.Action icon="magnify" onPress={ () => navigation.navigate("Search")} /> : null}
+            {name == 'Home' && <Appbar.Action size={21} style={styles.icon} icon="magnify" onPress={ () => navigation.navigate("Search")} />}
+            {/* {name == 'Home' && <Appbar.Action size={21} style={styles.icon} icon="menu" onPress={ () => navigation.openDrawer()} />} */}
         </Appbar.Header>
     )
 }
@@ -23,6 +25,10 @@ const TabAppBar = () => {
 const styles = StyleSheet.create({
     root: {
         backgroundColor: '#121212',
+    },
+    icon: {
+        borderColor: 'grey',
+        borderWidth: 0.5,
     }
 })
 

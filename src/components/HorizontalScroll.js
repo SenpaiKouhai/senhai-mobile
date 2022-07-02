@@ -7,30 +7,30 @@ const styles = StyleSheet.create({
     container: {
         padding: 5,
         height: 'auto',
-        overflow: 'hidden',
         marginRight: 5
     },
     img: {
         width: '100%', 
-        height: 160,
-        borderRadius: 10,
+        height: 200,
+        borderRadius: 5,
         resizeMode: 'cover'
     },
     card: {
-        width: 130,
+        width: 150,
         // maxHeight: 300
     },
     title: {
         fontSize: 14,
-        fontWeight: 'bold',
-        textAlign: 'center',
+        // fontWeight: 'bold',
+        // textAlign: 'center',
         marginTop: 5,
         maxHeight: 60,
-        color: "#a8dee0"
+        color: "#a8dee0",
+        fontFamily: 'OpenSans-SemiBold'
     },
     episode: {
         fontSize: 13,
-        textAlign: 'center',
+        // textAlign: 'center',
         marginTop: 5,
         opacity: 0.8
     }
@@ -53,7 +53,7 @@ export default function HorizontalScroll({ anime, component }) {
                                 style={styles.img}     
                                 fadeDuration={1000}                       
                             />
-                            <Text style={styles.title} >{anime.title}</Text>
+                            <Text style={styles.title} numberOfLines={2} >{anime.title}</Text>
                             {component == 'recentlyadded' ? <Text style={styles.episode} >Episode {anime.episodenumber}</Text> : null}
                         </View>
                     </TouchableOpacity>

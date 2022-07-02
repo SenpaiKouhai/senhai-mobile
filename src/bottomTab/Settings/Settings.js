@@ -29,7 +29,7 @@ export default function Settings() {
             </ImageBackground>
             <View style={styles.settingsWrapper} >
                 <View>
-                    <Text style={styles.senhai} >Senhai v1.13</Text>
+                    <Text style={styles.senhai} >Senhai v1.2</Text>
                 </View>
 
                 <Divider style={{ backgroundColor: 'grey', marginTop: 5 }} />

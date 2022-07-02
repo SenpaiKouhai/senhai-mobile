@@ -12,7 +12,6 @@ import BottomNav from './src/bottomTab/BottomNav';
 import { ActivityIndicator, Modal, StatusBar, StyleSheet, View } from 'react-native';
 import CodePush from 'react-native-code-push';
 
-// code push code appcenter codepush release-react -a senhai/Senhai Production
 // appcenter codepush release-react -a senhai/Senhai -d Production
 
 const updateDialogOptions = {
@@ -70,28 +69,29 @@ const App = () => {
   const { store, persistor } = reduxStore()
 
   // paper font config
-  // const fonts = {
-  //   android: {
-  //     regular: {
-  //       fontFamily: 'OpenSans-Bold'
-  //     },
-  //     medium: {
-  //       fontFamily: 'OpenSans-medium',
-  //       fontWeight: 'normal',
-  //     },
-  //     light: {
-  //       fontFamily: 'OpenSans-light',
-  //       fontWeight: 'normal',
-  //     },
-  //     thin: {
-  //       fontFamily: 'OpenSans-thin',
-  //       fontWeight: 'normal',
-  //     },
-  //   }
-  // }
+  const fonts = {
+    android: {
+      regular: {
+        fontFamily: 'OpenSans-Regular',
+        // fontWeight: 'normal'
+      },
+      medium: {
+        fontFamily: 'OpenSans-Medium',
+        // fontWeight: 'normal',
+      },
+      light: {
+        fontFamily: 'OpenSans-Italic',
+        // fontWeight: 'bold',
+      },
+      thin: {
+        fontFamily: 'OpenSans-Bold',
+        // fontWeight: 'bold',
+      }
+    }
+  }
   const paperTheme = {
-    ...PaperDarkTheme
-    // fonts: configureFonts(fonts)
+    ...PaperDarkTheme,
+    fonts: configureFonts(fonts)
   }
 
   return (
@@ -101,8 +101,9 @@ const App = () => {
       <Provider theme={paperTheme} >
         <PersistGate loading={null} persistor={persistor}>
           <NavigationContainer theme={DarkTheme} >
-            <DrawerNav />
-            {/* <StackView /> */}
+            {/* <DrawerNav /> */}
+            {/* <BottomNav /> */}
+            <StackView />
             {/* open modal for downloading updates */}
             <Modal
               animationType="fade"
@@ -123,7 +124,6 @@ const App = () => {
                 </View>
               </View>
             </Modal>
-          {/* <BottomNav /> */}
           </NavigationContainer>
         </PersistGate>
       </Provider>
@@ -135,7 +135,7 @@ const App = () => {
 const styles = StyleSheet.create({
   darken: {
     height: '100%', 
-    backgroundColor: 'rgba(0, 0, 0, 0.50)'
+    backgroundColor: 'rgba(0, 0, 0, 0.70)'
   },
   centerContainer: {
     flex: 1, 

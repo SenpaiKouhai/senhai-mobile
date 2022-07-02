@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import 'react-native-gesture-handler';
 import axios from 'axios'
-import { AppState, StatusBar, ScrollView, Dimensions, View, useWindowDimensions, BackHandler, ImageBackground, RefreshControl, TouchableWithoutFeedback, Animated, ActivityIndicator, TouchableOpacity, Image } from 'react-native'
+import { AppState, StatusBar, ScrollView, Dimensions, View, useWindowDimensions, BackHandler, ImageBackground, RefreshControl, TouchableWithoutFeedback, Animated, ActivityIndicator, TouchableOpacity, Image, FlatList } from 'react-native'
 import { Divider, Text } from 'react-native-paper'
 import Video from 'react-native-video'
 import Loading from '../reusable/Loading'
@@ -23,6 +23,25 @@ import DoubleClick from 'react-native-double-tap';
 import { saveHistory } from '../redux/history/action';
 import { headerBackPressed } from '../redux/settings/action';
 import { baseUrl } from '../settings/baseUrl'
+import Relations from '../components/Relations';
+
+// const Episode = ({ item, index, currentEpisode, image, onPress }) => {
+//     return (
+//         <View key={index} style={{ opacity: currentEpisode != item ? 0.5 : 1, alignItems: 'center', alignContent: 'center' }} >
+//             <TouchableOpacity onPress={onPress} activeOpacity={0.5} style={episodeStyle.episodeContainer} >
+//                 <View style={{ padding: 20, alignItems: 'center', width: 100 }} >
+//                     {/* <Image 
+//                         source={{ uri: image }}
+//                         style={episodeStyle.image}
+//                     /> */}
+//                     <Text style={episodeStyle.episodeText} >Ep {item}</Text>
+//                 </View>
+//                 {/* <Icon name='keyboard-arrow-right' color="#fff" size={25} style={{ alignSelf: 'center' }} /> */}
+//             </TouchableOpacity>
+//             {/* <Divider style={{ backgroundColor: 'grey', marginBottom: 10 }} /> */}
+//         </View>
+//     )
+// }
 
 export default function Watch({ route }) {
 
@@ -47,7 +66,7 @@ export default function Watch({ route }) {
     const [navHeight, setNavHeight] = useState(0)
     const [videoLoad, setVideoLoad] = useState(false)
     const [buffering, setBuffering] = useState(false)
-    const [isRefreshing, setIsRefreshing] = useState(false)
+    const [refresh, setRefresh] = useState(false)
     const [onNextVideo, setOnNextVideo] = useState(false)
 
     // video player controls state
@@ -77,33 +96,39 @@ export default function Watch({ route }) {
     useEffect( () => {
         // initialize axios token on fetch
         const c = axios.CancelToken.source();
-        // reload component when user use refresh control
-        setIsRefreshing(false)
-
+    
         axios.get(`${baseUrl}watching/${id}/${currentEpisode}`)
         .then( res => {
             // console.log(res)
             // console.log(res.data.links[0].link)
-            setLink(res.data.links[0].link)
-            setQuality(res.data.links[0].name)
+            // if(res.data.hd !== "") {
+            setLink(res.data.results)
+            setQuality("HD")
+            // } else {
+            //     setLink(`${res.data.alt}`)
+            //     setQuality("ALT")
+            // }
+            // setQuality(res.data.links[0].name)
             setCurrentTime(resumeTime == undefined ? 0 : resumeTime)
             setDuration(0)
             // setPaused(false)
             setIsLoading(true)
             setVideoLoad(false)
             setLoading(false)
-            res.data.links[0].name != '(HDP - mp4)' ? HDNotAvailableAlert() : null
+            // reload component when user use refresh control
+            setRefresh(false)
+            // res.data.links[0].name != '(HDP - mp4)' ? HDNotAvailableAlert() : null
         })
         .catch( err => {
             if(err.response.status !== 200) {
-                navigation.goBack()
+                // navigation.goBack()
                 console.log(err)
             }
         })  
      
         return () => c.cancel('unmounted')
 
-    }, [currentEpisode,isRefreshing])
+    }, [currentEpisode,refresh])
 
     // check appstate for saving history 
     const appState = useRef(AppState.currentState)
@@ -126,7 +151,7 @@ export default function Watch({ route }) {
     
     const handleAppStateChange = (nextAppState) => {
         if(AppState.currentState === 'background') dispatch(saveHistory(history))
-        if(AppState.currentState === 'inactive') dispatch(saveHistory(history))
+        // if(AppState.currentState === 'inactive') dispatch(saveHistory(history))
         if(appState.current.match(/inactive|background/) && nextAppState === "active") {
             // runs when the user goes back to app after background
             console.log("App has come to the foreground!");
@@ -237,7 +262,12 @@ export default function Watch({ route }) {
     
     // common video controls
     const onPlay = () => {
-        if(userPref.autoVideoFullscreen && paused) setIsFullScreen(true)
+        setPaused(!paused) 
+        // videoPlayer.current.setNativeProps({
+        //     paused: true
+        // })
+        !paused ? triggerHide() : null
+        if(userPref.autoVideoFullscreen && paused && !isFullScreen) setIsFullScreen(true)
         if(paused) {
             setTimeout(() => {
                 Animated.timing(animated, {
@@ -245,9 +275,10 @@ export default function Watch({ route }) {
                     duration: 300,
                     useNativeDriver: true
                 }).start();
-            }, 1500)
+            }, 2500)
+
         }
-        setPaused(!paused) 
+        console.log(videoPlayer.current.paused)
     }
     const onLoad = (data) => {
         if(resumeTime == undefined) {
@@ -259,6 +290,7 @@ export default function Watch({ route }) {
         setIsLoading(false)
         setBuffering(false)
         triggerShow();
+        setIsFullScreen(true)
         if(userPref.autoPlayOnLoad) {
             setIsFullScreen(true) 
             setPaused(false) 
@@ -275,8 +307,12 @@ export default function Watch({ route }) {
         setBuffering(false)
         // setIsFullScreen(true)
     }
-    const onProgress = (data) => {
-        setCurrentTime(data.currentTime)
+    const onProgress = ({ currentTime, playableDuration, seekableDuration }) => {
+        setCurrentTime(currentTime)
+        if(seekableDuration - currentTime < 1){
+            setBuffering(true)
+            setPaused(true)
+        }
         // console.log(data)
         setBuffering(false)
     } 
@@ -284,6 +320,7 @@ export default function Watch({ route }) {
         setPaused(true)
         setBuffering(false)
         setOnNextVideo(true)
+        setResumeTime(0)
         totalepisode != currentEpisode ? setTimeout( () => {
             setCurrentEpisode(currentEpisode+1)
             setOnNextVideo(false)
@@ -323,10 +360,12 @@ export default function Watch({ route }) {
     }
     const onNextEpisode = () => {
         setCurrentEpisode(currentEpisode+1)
+        setResumeTime(0)
         setVideoLoad(true)
     }
     const onPrevEpisode = () => {
         setCurrentEpisode(currentEpisode-1)
+        setResumeTime(0)
         setVideoLoad(true)
     }
 
@@ -354,6 +393,7 @@ export default function Watch({ route }) {
     }
 
     // episode list 
+    const [asc, setAsc] = useState(false)
     const epList = () => {
         let L = [];
         for (var i = totalepisode, k = 0; i >= 1; i--, k++) {
@@ -361,6 +401,30 @@ export default function Watch({ route }) {
         }
         return L;
     };
+    const renderEpisode = () => {
+        let arr = [];
+        let ep = episode
+
+        if( totalepisode <= 24 ) {
+            for (var i = totalepisode, k = 0; i >= 1; i--, k++) {
+                arr[k] = i;
+            }
+            return arr;
+        } else {
+            // cut episode that has more than 24 episode to lessen render problems 
+            for (var i = 12, k = 0; i >= 1; i--, k++) {
+                arr[k] = i;
+            }
+            return arr;
+        }
+    }
+    const onPickEpisode = () => {
+        setVideoLoad(true)
+        scrollToTop()
+        setResumeTime(0)
+    } 
+    
+    // const renderItem = ({ item, index }) => (<Episode item={item} index={index} image={image} currentEpisode={currentEpisode} onPress={onPickEpisode} ep={setCurrentEpisode()}  />)
 
     // scroll to top
     const scroll = useRef(null)
@@ -383,7 +447,7 @@ export default function Watch({ route }) {
                         <Video 
                             source={{ uri: link }}
                             style={isFullScreen ? {width: window.width + navHeight, height: window.height} : styles.video}
-                            paused={paused}
+                            paused={paused ? true : false }
                             resizeMode={'contain'}
                             onProgress={onProgress}
                             onLoad={onLoad}
@@ -395,12 +459,7 @@ export default function Watch({ route }) {
                             fullscreen={isFullScreen}
                             onReadyForDisplay={onReadyForDisplay}
                             onEnd={onEnd}
-                            bufferConfig={{
-                                minBufferMs: 15000,
-                                maxBufferMs: 50000,
-                                bufferForPlaybackMs: 2500,
-                                bufferForPlaybackAfterRebufferMs: 5000
-                            }}
+                            
                         />
                     </TouchableWithoutFeedback>
 
@@ -472,7 +531,7 @@ export default function Watch({ route }) {
                     >
                         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%', justifyContent: 'space-between' }} >
                             <View style={{ padding: 5, width: '70%', marginLeft: 5 }} >
-                                <Text style={{ fontSize: isFullScreen ? 16 : 14.5 }} numberOfLines={2} >{title}</Text>
+                                <Text style={{ fontSize: isFullScreen ? 16 : 14.5, fontFamily: 'OpenSans-BoldItalic' }} numberOfLines={2} >{title}</Text>
                                 <Text style={{ fontSize: isFullScreen ? 14 : 13, opacity: 0.6 }} >Episode: {currentEpisode}</Text>
                             </View>
 
@@ -518,7 +577,7 @@ export default function Watch({ route }) {
                             {/* video time and slider */}
                             <View style={[ { width: isFullScreen ? '80%' : '70%' }, bottomControls.timeAndSliderContainer]} >
                                 <Text style={{ width: isFullScreen ? '10%' : '20%',textAlign: 'center' }}>
-                                    {secondsToTime(Math.floor((currentTime / duration) * duration))}
+                                    {secondsToTime(~~((currentTime / duration) * duration))}
                                 </Text>
                                 
                                 <Slider 
@@ -533,6 +592,7 @@ export default function Watch({ route }) {
                                     onSlidingComplete={onSeek}
                                     thumbTintColor={color.blue}
                                     animateTransitions={true}
+                                    
                                 /> 
 
                                 <Text style={{ width: isFullScreen ? '10%' : '20%', textAlign: 'center' }}  >{videoDurationTime}</Text>
@@ -554,7 +614,7 @@ export default function Watch({ route }) {
                             }
 
                             <View style={{ width: isFullScreen ? '5%' : '10%' }} >
-                                <Text style={{ textAlign: 'center', fontWeight: 'bold' }} >{quality.split('-')[0].replace('(','').replace('P','')}</Text>
+                                <Text style={{ textAlign: 'center', fontWeight: 'bold' }} >{quality}</Text>
                             </View>
                             
                             
@@ -567,46 +627,53 @@ export default function Watch({ route }) {
                     </Animated.View>
                 </View>
             }
-            <ScrollView ref={scroll} >
-                <View style={isFullScreen ? styles.hide : styles.titleContainer } >
-                    <View style={styles.titleAndEpisode} >
-                        <Text style={styles.title} numberOfLines={2} >{title}</Text>
-                        <Text style={styles.episode} >Watching Episode: {currentEpisode}</Text>
+
+            <ScrollView ref={scroll} nestedScrollEnabled={true} style={ isFullScreen && styles.hide } >       
+                {/* episode controller */}
+                <View style={{ margin: 5, marginBottom: 0, flexDirection: 'row', justifyContent: 'space-between' }} >
+                    <View>
+                    { currentEpisode - 1 != 0 && 
+                        <TouchableOpacity onPress={onPrevEpisode} style={{ flexDirection: 'row', alignItems: 'center' }} >
+                            <MaterialCommunityIcons name='arrow-left-drop-circle' size={15} color='#fff' />
+                            <Text style={{ marginLeft: 5, fontFamily: 'OpenSans-SemiBold' }} >Episode {currentEpisode - 1}</Text>
+                        </TouchableOpacity>
+                    }
                     </View>
+
+                    { Number(currentEpisode) != Number(totalepisode) && 
+                        <TouchableOpacity onPress={onNextEpisode} style={{ flexDirection: 'row', alignItems: 'center' }} >
+                            <Text style={{ marginRight: 5, fontFamily: 'OpenSans-SemiBold' }} >Episode {Number(currentEpisode)+1}</Text>
+                            <MaterialCommunityIcons name='arrow-right-drop-circle' size={15} color='#fff' />
+                        </TouchableOpacity>
+                    }
+                </View>
+                <View style={isFullScreen ? styles.hide : styles.titleContainer } >
+
+                    <View style={styles.titleAndEpisode} >
+                        <TouchableOpacity activeOpacity={0.6} onPress={ () => navigation.navigate('Details',{ id: id })} >
+                            <Text style={styles.title} numberOfLines={2} >{title}</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.episode} >Total Episode: {totalepisode}</Text>
+                    </View>
+
                     <View style={{ width: '30%' }} >
-                        <TouchableOpacity activeOpacity={0.5} onPress={ () => navigation.navigate('Details',{ id: id })} >
-                            <Icon name="format-list-bulleted" style={{ textAlign: 'right', marginRight: 20 }} color={color.blue} size={30} />
+                        <TouchableOpacity activeOpacity={0.5} onPress={ () => {setLoading(true),setRefresh(true)}} >
+                            <Icon name="refresh" style={{ textAlign: 'right', marginRight: 20 }} color={color.blue} size={28} />
                         </TouchableOpacity>
                     </View>
+
                 </View>
 
-                <Divider style={ isFullScreen ? styles.hide : { backgroundColor: 'grey', marginTop: 10, marginBottom: 5 }} />
+                <Divider style={ isFullScreen ? styles.hide : { backgroundColor: 'grey', marginTop: 10, marginBottom: 5, marginLeft: 5, marginRight: 5 }} />
 
-                {/* more episode container */}
+                {/* relation container */}
                 <View style={ isFullScreen ? styles.hide : episodeStyle.container } >
-
-                    <Text style={episodeStyle.title} >More Episodes</Text>
-                    {!isFullScreen && <View style={{ marginLeft: 5, marginRight: 5 }} >
-                        {epList().map( i => (
-                            <View key={i} style={{ opacity: currentEpisode != i ? 0.5 : 1 }} >
-                                <TouchableOpacity onPress={ () => {setCurrentEpisode(i), setVideoLoad(true), scrollToTop(), setResumeTime(0)} } activeOpacity={0.5} style={episodeStyle.episodeContainer} >
-                                    <View style={{ flexDirection: 'row' }} >
-                                        <Image 
-                                            source={{ uri: image }}
-                                            style={episodeStyle.image}
-                                        />
-                                        <Text style={episodeStyle.episodeText} >Episode: {i}</Text>
-                                    </View>
-                                    <Icon name='keyboard-arrow-right' color="#fff" size={25} style={{ alignSelf: 'center' }} />
-                                </TouchableOpacity>
-                                <Divider style={{ backgroundColor: 'grey', marginBottom: 10 }} />
-                            </View>
-                        ))}
-                    </View>}
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' , alignItems: 'center', marginBottom: 20}} >
+                        <Text style={episodeStyle.title} >Relations</Text>
+                    </View>
+                    <Relations title={title} />
                 </View>
-
             </ScrollView>
-
         </View>
     )
 }

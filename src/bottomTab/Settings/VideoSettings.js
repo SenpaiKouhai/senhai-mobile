@@ -11,13 +11,6 @@ const VideoSettings = () => {
     const dispatch = useDispatch()
     const userPref = useSelector( state => state.userPref )
 
-    const handleAutoVideoFullscreen = () => {
-        dispatch(autoFullscreen(!userPref.autoVideoFullscreen))
-    }
-    const handleAutoPlayOnLoad = () => {
-        dispatch(autoPlayOnLoad(!userPref.autoPlayOnLoad))
-    }
-
     return (
         <View>
             <Title 

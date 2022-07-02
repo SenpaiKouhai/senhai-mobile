@@ -11,6 +11,8 @@ import { tabSelect } from '../redux/action';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import DetectNavbar from 'react-native-detect-navbar-android';
+import Shimmer from 'react-native-shimmer';
+import bg from '../assets/hutao3.png'
 
 const styles = StyleSheet.create({
     header: {
@@ -39,6 +41,11 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold'
     },
+    bg: {
+        width: '100%',
+        height: 600,
+        // marginLeft: 10
+    }
 })
 
 export default function DrawerContent({ navigation }) {
@@ -73,49 +80,63 @@ export default function DrawerContent({ navigation }) {
     
     return (
         <DrawerContentScrollView>
-        <View style={{ height: window.height - 48}} >
-            <View>
-                <View style={styles.header} >
+            <View style={{ height: window.height}} >
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
+            <Shimmer style={{ width: '100%' }} >
                     <ImageBackground
-                        source={{ uri: 'https://www.desktophut.com/wp-content/uploads/2017/12/IRLIViQ.jpg.webp' }}
-                        imageStyle={{ opacity: 0.8 }}
-                        style={styles.img}
+                        source={bg}
+                        style={styles.bg}
+                        imageStyle={styles.bg}
+                        resizeMode='cover'
+                        // blurRadius={2}
                     >
-                        <View style={styles.profileContainer} >
-                            <Image 
-                                source={{ uri: 'https://c4.wallpaperflare.com/wallpaper/517/94/458/anime-konosuba-god-s-blessing-on-this-wonderful-world-kono-subarashii-sekai-ni-shukufuku-wo-megumin-konosuba-wallpaper-preview.jpg' }}
-                                style={styles.profileImg}
-                            />
-                            <Text style={styles.username} numberOfLines={1} >Megumin</Text>
-                            <Text style={{ opacity: 0.6 }} >megumin@gmail.com</Text>
+                        <View style={{ width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.2)', flex: 1, justifyContent: 'center', alignItems: 'center' }} >
+                                <Text style={{ fontSize: 20, color: '#40E0D0' }} >Coming Soon...</Text>
                         </View>
                     </ImageBackground>
+                </Shimmer>
+
                 </View>
 
-                <Divider style={{ backgroundColor: 'grey' }} />
+                {/* <View>
+                    <View style={styles.header} >
+                        <ImageBackground
+                            source={{ uri: 'https://www.desktophut.com/wp-content/uploads/2017/12/IRLIViQ.jpg.webp' }}
+                            imageStyle={{ opacity: 0.8 }}
+                            style={styles.img}
+                        >
+                            <View style={styles.profileContainer} >
+                                <Image 
+                                    source={{ uri: 'https://c4.wallpaperflare.com/wallpaper/517/94/458/anime-konosuba-god-s-blessing-on-this-wonderful-world-kono-subarashii-sekai-ni-shukufuku-wo-megumin-konosuba-wallpaper-preview.jpg' }}
+                                    style={styles.profileImg}
+                                />
+                                <Text style={styles.username} numberOfLines={1} >Megumin</Text>
+                                <Text style={{ opacity: 0.6 }} >megumin@gmail.com</Text>
+                            </View>
+                        </ImageBackground>
+                    </View>
 
-                <DrawerItem
-                    label="Home"
-                    onPress={handleGoHome}
-                    icon={ (props) => <MaterialCommunityIcons name='home' color={props.color} size={props.size} />}
-                />
-                <DrawerItem
-                    label="Settings"
-                    onPress={handleGoSettings}
-                    icon={ (props) => <MaterialIcons name='settings' color={props.color} size={props.size} />}
-                />
-                <DrawerItem 
-                    label="MAL"
-                    // onPress={ () => navigation.navigate('sched') }
-                    icon={ (props) => <MaterialIcons name='filter-list' color={props.color} size={25} />}
-                />
-            </View>
+                    <Divider style={{ backgroundColor: 'grey' }} />
 
-            <View style={{ position: 'absolute', bottom: 0, width: '100%' }} >
-                {/* <Divider style={{ backgroundColor: 'grey' }} /> */}
-                {/* <Text style={{ textAlign: 'right', fontSize: 16, marginTop: 5 }} >Login</Text> */}
+                    <DrawerItem
+                        label="Home"
+                        onPress={handleGoHome}
+                        icon={ (props) => <MaterialCommunityIcons name='home' color={props.color} size={props.size} />}
+                    />
+                    <DrawerItem
+                        label="Settings"
+                        onPress={handleGoSettings}
+                        icon={ (props) => <MaterialIcons name='settings' color={props.color} size={props.size} />}
+                    />
+                    <DrawerItem 
+                        label="MAL"
+                        onPress={ () => navigation.navigate('sched') }
+                        icon={ (props) => <MaterialIcons name='filter-list' color={props.color} size={25} />}
+                    />
+                </View> */}
+
+               
             </View>
-        </View>
         </DrawerContentScrollView>
     )
 }
